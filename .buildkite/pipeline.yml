@@ -1,0 +1,6 @@
+steps:
+  - label: 'Generate docker images'
+    command: 'deploy.sh'
+    branches: master
+    agents:
+      queue: 'aws_agent'

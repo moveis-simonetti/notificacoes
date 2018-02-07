@@ -1,0 +1,26 @@
+version: '2.1'
+
+volumes:
+  redis-data:
+    driver: local
+
+services:
+  redis:
+    image: redis:4.0.2-alpine
+    volumes:
+      - redis-data:/data
+    ports:
+      - 6389:6379
+
+  app:
+    image: node:8.7.0-alpine
+    working_dir: /app
+    command: ['/bin/sh', '-c', 'npm install && npm run build && npm run start:dev']
+    volumes:
+      - .:/app
+    ports:
+      - 3000:3000
+    links:
+      - redis
+    depends_on:
+      - redis
