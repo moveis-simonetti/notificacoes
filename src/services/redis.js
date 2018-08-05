@@ -1,10 +1,9 @@
 import {createClient} from 'redis';
 import md5 from 'md5';
 
-const redis = createClient(
-    process.env.REDIS_PORT,
-    process.env.REDIS_HOST
-);
+const redis = createClient({
+    url: process.env.REDIS_URL,
+});
 
 function callback(fulfill, reject, err, dados) {
     if (err) {
