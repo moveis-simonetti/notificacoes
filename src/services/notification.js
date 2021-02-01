@@ -1,4 +1,5 @@
 import pusher from "./pusher";
+import {sendNotification} from "./pushNotification";
 import printf from "printf";
 
 import {deleteEntry, getData, insertEntry, updateEntry} from "./redis";
@@ -9,7 +10,7 @@ function dispatchNotification(message) {
     return new Promise((fulfill, reject) => {
         try {
             pusher.trigger(RESOURCE, message.login, message);
-
+            sendNotification(message.login, message);
             fulfill(message);
         } catch (err) {
             reject(err);

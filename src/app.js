@@ -5,6 +5,7 @@ import notificationsRoutes from './routes/notifications';
 import notificationsMiddleware from "./middlewares/notifications";
 import cors from "./middlewares/cors";
 import eventsRoutes from "./routes/events";
+import pushRoutes from "./routes/pushNotification";
 import eventsMiddleware from "./middlewares/events";
 
 export default express()
@@ -13,4 +14,5 @@ export default express()
     .use('/notifications', notificationsMiddleware)
     .use('/notifications', notificationsRoutes)
     .use('/events', eventsMiddleware)
-    .use('/events', eventsRoutes);
+    .use('/events', eventsRoutes)
+    .use('/pusher/beams-auth', pushRoutes);
