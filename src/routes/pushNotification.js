@@ -7,6 +7,6 @@ export default Router().get("/", function(req, res) {
     const beamsToken = beamsClient.generateToken(userId);
     res.send(JSON.stringify(beamsToken));
   } catch (err) {
-    res.status(401).send('Usuário não registrado')
+    res.status(401).send(err)
   }
 })

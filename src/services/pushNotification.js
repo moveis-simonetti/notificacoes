@@ -5,14 +5,14 @@ const beamsClient = new PushNotifications({
   secretKey: process.env.PUSHER_SECRET_KEY
 });
 
-export function sendNotification(login, data) {
-  const { notificacao } = data;
+export function sendNotification(login, { notificacao }) {
+  const { assunto, conteudo, url_destino } = notificacao;
   beamsClient.publishToUsers([login], {
     web: {
       notification: {
-        title: notificacao.assunto,
-        body: notificacao.conteudo,
-        deep_link: notificacao.url_destino 
+        title: assunto,
+        body: conteudo,
+        deep_link: url_destino 
       }
     }
   }).then((publishResponse) => {
