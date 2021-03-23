@@ -12,7 +12,7 @@ export function sendNotification(login, { notificacao }) {
       notification: {
         title: assunto,
         body: conteudo,
-        deep_link: url_destino 
+        deep_link: url_destino || "about:blank"
       }
     }
   }).then((publishResponse) => {
