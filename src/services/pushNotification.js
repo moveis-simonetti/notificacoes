@@ -10,16 +10,18 @@ const beamsClient =
 
 export function sendNotification(login, { notificacao }) {
   const { assunto, conteudo, url_destino } = notificacao;
+
+  let notification = {
+    title: assunto,
+    body: conteudo,
+  };
+
+  if (url_destino) notification.deep_link = url_destino;
+
   beamsClient &&
     beamsClient
       .publishToUsers([login], {
-        web: {
-          notification: {
-            title: assunto,
-            body: conteudo,
-            deep_link: url_destino || "about:blank",
-          },
-        },
+        web: { notification },
       })
       .then((publishResponse) =>
         console.log("Just published:", publishResponse.publishId)
