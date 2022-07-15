@@ -1,8 +1,8 @@
-import pusher from "./pusher";
-import {sendNotification} from "./pushNotification";
-import printf from "printf";
+import pusher from './pusher';
+import { sendNotification } from './pushNotification';
+import printf from 'printf';
 
-import {deleteEntry, getData, insertEntry, updateEntry} from "./redis";
+import { deleteEntry, getData, insertEntry, updateEntry } from './redis';
 
 const RESOURCE = 'notifications';
 
@@ -19,22 +19,29 @@ function dispatchNotification(message) {
 }
 
 export function addNotification(notification) {
-    let {login} = notification;
+    let { login } = notification;
+    login = new String(login || '').toLowerCase();
 
     let now = new Date();
 
     notification.criacao = printf(
-        "%d-%02d-%02d %d:%d:%d",
+        '%d-%02d-%02d %d:%d:%d',
         now.getFullYear(),
         1 + now.getMonth(),
         now.getDate(),
         now.getHours(),
         now.getMinutes(),
-        now.getSeconds()
+        now.getSeconds(),
     );
 
     return insertEntry(RESOURCE, login, notification)
-        .then(notificacao => getQttyPending(login).then(pendente => ({login, pendente, notificacao})))
+        .then((notificacao) =>
+            getQttyPending(login).then((pendente) => ({
+                login,
+                pendente,
+                notificacao,
+            })),
+        )
         .then(dispatchNotification);
 }
 
@@ -51,13 +58,12 @@ export function getNotificationsByUser(login) {
 }
 
 export function deleteNotification(login, _$key) {
-    return deleteEntry(RESOURCE, login, {_$key});
+    return deleteEntry(RESOURCE, login, { _$key });
 }
 
 export function getQttyPending(login) {
-    return getData(RESOURCE, login)
-        .then(data => ({
-            qtde: data.length,
-            registros_sonoros: data.filter(entry => entry.sonoro).length
-        }));
+    return getData(RESOURCE, login).then((data) => ({
+        qtde: data.length,
+        registros_sonoros: data.filter((entry) => entry.sonoro).length,
+    }));
 }
