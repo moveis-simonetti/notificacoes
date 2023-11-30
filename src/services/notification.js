@@ -2,7 +2,7 @@ import pusher from './pusher';
 import { sendNotification } from './pushNotification';
 import printf from 'printf';
 
-import { deleteEntry, getData, insertEntry, updateEntry } from './redis';
+import { deleteEntry, getData, insertEntry, setData, updateEntry } from './redis';
 
 const RESOURCE = 'notifications';
 
@@ -59,6 +59,10 @@ export function getNotificationsByUser(login) {
 
 export function deleteNotification(login, _$key) {
     return deleteEntry(RESOURCE, login, { _$key });
+}
+
+export function deleteAllNotifications(login) {
+    return setData(RESOURCE, login, []);
 }
 
 export function getQttyPending(login) {
