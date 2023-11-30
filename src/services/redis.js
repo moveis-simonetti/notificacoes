@@ -1,9 +1,7 @@
-import {createClient} from 'redis';
+import { Redis } from 'ioredis';
 import md5 from 'md5';
 
-const redis = createClient({
-    url: process.env.REDIS_URL,
-});
+const redis = new Redis(process.env.REDIS_URL);
 
 function callback(fulfill, reject, err, dados) {
     if (err) {
