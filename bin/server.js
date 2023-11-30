@@ -1,4 +1,4 @@
-require('dotenv').load();
+require('dotenv').config();
 
 function normalizaPort(val) {
     const port = parseInt(val, 10);
