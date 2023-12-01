@@ -1,6 +1,7 @@
 import {
     addNotification,
     deleteNotification,
+    deleteAllNotifications,
     getNotificationsByUser,
     getQttyPending,
     updateNotification
@@ -59,6 +60,17 @@ export const remove = (req, res, next) => {
         res,
         next,
         deleteNotification(login, key),
+        () => res.status(204).send()
+    )
+};
+
+export const removeAll = (req, res, next) => {
+    let {login} = req.params;
+
+    return helper(
+        res,
+        next,
+        deleteAllNotifications(login),
         () => res.status(204).send()
     )
 };

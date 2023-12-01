@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+EXTRA=""
+
+if [ "${NEW_RELIC_APP_NAME}" != "" ] && [ "${NEW_RELIC_LICENSE_KEY}" != "" ]; then
+    EXTRA="-r newrelic"
+fi
+
+node $(echo $EXTRA) bin/server.js
