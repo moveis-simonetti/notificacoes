@@ -1,8 +1,13 @@
 import pusher from './pusher';
-import { sendNotification } from './pushNotification';
 import printf from 'printf';
 
-import { deleteEntry, getData, insertEntry, setData, updateEntry } from './redis';
+import {
+    deleteEntry,
+    getData,
+    insertEntry,
+    setData,
+    updateEntry,
+} from './redis';
 
 const RESOURCE = 'notifications';
 
@@ -10,7 +15,6 @@ function dispatchNotification(message) {
     return new Promise((fulfill, reject) => {
         try {
             pusher.trigger(RESOURCE, message.login, message);
-            sendNotification(message.login, message);
             fulfill(message);
         } catch (err) {
             reject(err);
@@ -31,7 +35,7 @@ export function addNotification(notification) {
         now.getDate(),
         now.getHours(),
         now.getMinutes(),
-        now.getSeconds(),
+        now.getSeconds()
     );
 
     return insertEntry(RESOURCE, login, notification)
@@ -40,7 +44,7 @@ export function addNotification(notification) {
                 login,
                 pendente,
                 notificacao,
-            })),
+            }))
         )
         .then(dispatchNotification);
 }
