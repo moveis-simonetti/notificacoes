@@ -14,7 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pusher/push-notifications-server": "^1.2.6",
     "dotenv": "^16",
     "express": "^4",
     "ioredis": "^5.3.2",
