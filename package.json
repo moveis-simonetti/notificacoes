@@ -18,7 +18,7 @@
     "express": "^4",
     "ioredis": "^5.3.2",
     "md5": "^2",
-    "newrelic": "^11.6.0",
+    "newrelic": "^11.23.2",
     "printf": "^0.6.1",
     "pusher": "^5.2"
   },
