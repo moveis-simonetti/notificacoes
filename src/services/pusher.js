@@ -8,6 +8,10 @@ const config = {
     encrypted: process.env.PUSHER_ENCRYPTED && JSON.parse(process.env.PUSHER_ENCRYPTED)
 };
 
+if (process.env.PUSHER_HOST) {
+    config.host = process.env.PUSHER_HOST;
+}
+
 const pusher = new Pusher(config);
 
 export default pusher;
