@@ -9,7 +9,10 @@ const config = {
 };
 
 if (process.env.PUSHER_HOST) {
-    config.host = process.env.PUSHER_HOST;
+    const endpoint = new URL(process.env.PUSHER_HOST);
+    config.host = endpoint.hostname;
+    config.scheme = endpoint.protocol.replace(':', '');
+    config.useTLS = endpoint.protocol === 'https:';
 }
 
 const pusher = new Pusher(config);
