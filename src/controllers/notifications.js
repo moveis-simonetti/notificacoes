@@ -83,3 +83,39 @@ export const getStatus = (req, res, next) => (
         qtty => res.status(200).send(qtty)
     )
 );
+
+export const fetchPaginated = (req, res, next) => {
+    const page = parseInt(req.params.page || req.query.page) || 1;
+    const limit = parseInt(req.params.limit || req.query.limit) || 10;
+
+    if (page < 1 || limit < 1) {
+        return res.status(400).send({
+            err: true,
+            message: 'Parâmetros de página ou limite inválidos.'
+        })
+    }
+
+    helper(
+        res,
+        next,
+        getNotificationsByUser(req.params.login || req.query.login),
+        notifications => {
+            const start = (page - 1) * limit;
+            const end = start + limit;
+            const totalItems = notifications.length
+            const totalPages = Math.ceil(totalItems / limit);
+
+            const paginatedNotifications = notifications.slice(start, end).map(notification =>
+                Object.assign(notification, { id: notification._$key })
+            );
+
+            res.status(200).send({
+                page,
+                limit,
+                totalItems,
+                totalPages,
+                data: paginatedNotifications
+            });
+        }
+    );
+};
