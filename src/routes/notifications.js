@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {create, update, fetch, remove, removeAll, getStatus} from "../controllers/notifications";
+import {create, update, fetch, remove, removeAll, getStatus, fetchPaginated} from "../controllers/notifications";
 
 export default Router()
     .post("/", create)
@@ -8,4 +8,5 @@ export default Router()
     .delete("/:login", removeAll)
     .get("/:login", fetch)
     .get("/", fetch)
-    .get("/:login/status", getStatus);
+    .get("/:login/status", getStatus)
+    .get("/:login/:page/:limit", fetchPaginated);

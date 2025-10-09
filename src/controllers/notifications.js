@@ -1,8 +1,9 @@
 import {
     addNotification,
-    deleteNotification,
     deleteAllNotifications,
+    deleteNotification,
     getNotificationsByUser,
+    getNotificationsQtde,
     getQttyPending,
     updateNotification
 } from "../services/notification";
@@ -83,3 +84,45 @@ export const getStatus = (req, res, next) => (
         qtty => res.status(200).send(qtty)
     )
 );
+
+export const fetchPaginated = (req, res, next) => {
+    const login = req.params.login || req.query.login;
+    const page = parseInt(req.params.page || req.query.page) || 1;
+    const limit = parseInt(req.params.limit || req.query.limit) || 10;
+
+    if (page < 1 || limit < 1) {
+        return res.status(400).send({
+            err: true,
+            message: 'Parâmetros de página ou limite inválidos.'
+        })
+    }
+
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    return Promise.all([
+        getNotificationsByUser(login, start, end),
+        getNotificationsQtde(login),
+    ]).then(([notifications, totalItems]) => {
+        const paginatedNotifications = notifications.map(notification => {
+            return Object.assign(notification, { id: notification._$key });
+        });
+
+        const totalPages = Math.ceil(totalItems / limit);
+
+        res.status(200).send({
+            page,
+            limit,
+            totalItems,
+            totalPages,
+            data: paginatedNotifications,
+        });
+    }).catch((err) => {
+        res.status(500).send({
+            err: true,
+            message: err.message,
+        });
+
+        next();
+    });
+};

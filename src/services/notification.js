@@ -1,13 +1,7 @@
 import pusher from './pusher';
 import printf from 'printf';
 
-import {
-    deleteEntry,
-    getData,
-    insertEntry,
-    setData,
-    updateEntry,
-} from './redis';
+import {deleteAllEntry, deleteEntry, getData, getQuantity, insertEntry, updateEntry,} from './redis';
 
 const RESOURCE = 'notifications';
 
@@ -57,8 +51,8 @@ export function updateNotification(notification) {
     return updateEntry(RESOURCE, notification.login, notification);
 }
 
-export function getNotificationsByUser(login) {
-    return getData(RESOURCE, login);
+export function getNotificationsByUser(login, start = 0, end = -1) {
+    return getData(RESOURCE, login, start, end);
 }
 
 export function deleteNotification(login, _$key) {
@@ -66,12 +60,13 @@ export function deleteNotification(login, _$key) {
 }
 
 export function deleteAllNotifications(login) {
-    return setData(RESOURCE, login, []);
+    return deleteAllEntry(RESOURCE, login);
 }
 
 export function getQttyPending(login) {
-    return getData(RESOURCE, login).then((data) => ({
-        qtde: data.length,
-        registros_sonoros: data.filter((entry) => entry.sonoro).length,
-    }));
+    return getQuantity(RESOURCE, login);
+}
+
+export function getNotificationsQtde(login) {
+    return getQuantity(RESOURCE, login).then(pendente => pendente.qtde);
 }
