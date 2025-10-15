@@ -4,3 +4,6 @@ all:
 
 push: all
 	docker push $(IMAGE)
+
+prisma-diff:
+	docker compose exec app npx prisma migrate dev

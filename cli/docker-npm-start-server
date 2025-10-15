@@ -7,4 +7,6 @@ if [ "${NEW_RELIC_APP_NAME}" != "" ] && [ "${NEW_RELIC_LICENSE_KEY}" != "" ]; th
     EXTRA="-r newrelic"
 fi
 
+npx prisma generate
+npx prisma migrate deploy
 node $(echo $EXTRA) bin/server.js

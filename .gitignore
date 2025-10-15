@@ -4,3 +4,4 @@ dist/
 .idea/
 .env
 npm-debug.log
+/src/generated/prisma

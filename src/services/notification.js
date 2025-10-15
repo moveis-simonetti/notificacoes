@@ -1,7 +1,6 @@
 import pusher from './pusher';
-import printf from 'printf';
 
-import {deleteAllEntry, deleteEntry, getData, getQuantity, insertEntry, updateEntry,} from './redis';
+import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry,} from './database';
 
 const RESOURCE = 'notifications';
 
@@ -16,57 +15,52 @@ function dispatchNotification(message) {
     });
 }
 
-export function addNotification(notification) {
-    let { login } = notification;
+export async function addNotification(context, notification) {
+    let {login} = notification;
     login = new String(login || '').toLowerCase();
 
-    let now = new Date();
+    try {
+        const createdNote = await insertEntry(login, notification);
+        const pendente = await getQttyPending(login, context);
 
-    notification.criacao = printf(
-        '%d-%02d-%02d %d:%d:%d',
-        now.getFullYear(),
-        1 + now.getMonth(),
-        now.getDate(),
-        now.getHours(),
-        now.getMinutes(),
-        now.getSeconds()
-    );
+        const result = {
+            login,
+            pendente,
+            notificacao: createdNote,
+        };
 
-    return insertEntry(RESOURCE, login, notification)
-        .then((notificacao) =>
-            getQttyPending(login).then((pendente) => ({
-                login,
-                pendente,
-                notificacao,
-            }))
-        )
-        .then(dispatchNotification);
+        await dispatchNotification(result);
+
+        return result;
+    } catch (err) {
+        throw err;
+    }
 }
 
 export function updateNotification(notification) {
     if (!notification.pendente) {
-        return deleteNotification(notification.login, notification._$key);
+        return deleteNotification(notification.id);
     }
 
-    return updateEntry(RESOURCE, notification.login, notification);
+    return updateEntry(notification);
 }
 
-export function getNotificationsByUser(login, start = 0, end = -1) {
-    return getData(RESOURCE, login, start, end);
+export function getNotificationsByUser(login, context, skip = 0, limit = undefined) {
+    return getData(login, context, skip, limit);
 }
 
-export function deleteNotification(login, _$key) {
-    return deleteEntry(RESOURCE, login, { _$key });
+export function deleteNotification(id) {
+    return inactivateEntry(id);
 }
 
 export function deleteAllNotifications(login) {
-    return deleteAllEntry(RESOURCE, login);
+    return inactivateAllEntry(login);
 }
 
-export function getQttyPending(login) {
-    return getQuantity(RESOURCE, login);
+export function getQttyPending(login, context) {
+    return getQuantity(login, context);
 }
 
-export function getNotificationsQtde(login) {
-    return getQuantity(RESOURCE, login).then(pendente => pendente.qtde);
+export function getNotificationsQtde(login, context) {
+    return getQuantity(login, context).then(pendente => pendente.qtde);
 }
