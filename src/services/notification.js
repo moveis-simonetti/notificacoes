@@ -19,8 +19,6 @@ export async function addNotification(context, notification) {
     let {login} = notification;
     login = new String(login || '').toLowerCase();
 
-    notification.context ??= context;
-
     try {
         const createdNote = await insertEntry(login, notification);
         const pendente = await getQttyPending(login, context);
