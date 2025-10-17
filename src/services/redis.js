@@ -1,4 +1,4 @@
-import { Redis } from 'ioredis';
+import {Redis} from 'ioredis';
 import md5 from 'md5';
 
 const redis = new Redis(process.env.REDIS_URL);
@@ -64,8 +64,8 @@ export function saveEntry(resource, group, entry) {
 export function deleteEntry(resource, group, entry) {
     return getData(resource, group)
         .then(data => setData(
-            resource, group, data.filter(
-                dbEntry => dbEntry._$key !== entry._$key)
+                resource, group, data.filter(
+                    dbEntry => dbEntry._$key !== entry._$key)
             )
         );
 }
