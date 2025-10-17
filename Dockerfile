@@ -14,6 +14,7 @@ RUN npm install
 COPY cli/* /usr/local/bin/
 COPY .babelrc .babelrc
 COPY bin bin
+COPY prisma prisma
 COPY src src
 
 RUN chmod a+x /usr/local/bin/docker-npm-*
