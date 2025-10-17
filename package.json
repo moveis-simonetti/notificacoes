@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate deploy",
+    "prisma:setup": "npm run prisma:migrate && npm run prisma:generate",
     "nodemon": "nodemon ./bin/server.js",
     "build": "babel src -d dist --minified",
     "build:dev": "babel src -d dist --watch",
