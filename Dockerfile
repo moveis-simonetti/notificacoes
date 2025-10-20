@@ -1,4 +1,4 @@
-FROM node:20.10-alpine
+FROM node:lts-alpine
 
 ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=false
 ENV NEW_RELIC_APP_NAME=""

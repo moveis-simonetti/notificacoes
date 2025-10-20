@@ -26,10 +26,11 @@ services:
       - ${REDIS_PORT:-6379}:6389
 
   app:
-    image: node:20.10-alpine
-    working_dir: /app
-    command:
-      ['/bin/sh', '-c', 'npm install && npm run build && npm run start:dev']
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - APP_ENV=${APP_ENV:-dev}
     volumes:
       - .:/app
     ports:
@@ -38,3 +39,4 @@ services:
       - redis
     depends_on:
       - redis
+      - db
