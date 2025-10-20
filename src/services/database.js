@@ -1,4 +1,4 @@
-import {PrismaClient} from '../generated/prisma';
+import {PrismaClient} from '@prisma/client';
 import md5 from "md5";
 import {formatNotification} from "../utils/formatter";
 

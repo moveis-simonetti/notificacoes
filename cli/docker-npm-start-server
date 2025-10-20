@@ -2,10 +2,14 @@
 set -e
 
 EXTRA=""
+RUNNER="start"
 
 if [ "${NEW_RELIC_APP_NAME}" != "" ] && [ "${NEW_RELIC_LICENSE_KEY}" != "" ]; then
     EXTRA="-r newrelic"
 fi
 
-npm run prisma:setup
-node $(echo $EXTRA) bin/server.js
+if [ "${APP_ENV}" = "dev" ]; then
+  RUNNER="start:dev"
+fi
+
+npm run $RUNNER -- $EXTRA
