@@ -15,3 +15,20 @@ export function formatNotification(notification) {
             .split('.')[0],
     };
 }
+
+export function newDate() {
+    const preDate = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).format(new Date());
+
+    const [mes, dia, ano, hora, minuto, segundo] = preDate.match(/\d+/g);
+
+    return new Date(`${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`);
+}

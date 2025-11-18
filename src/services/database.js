@@ -1,6 +1,6 @@
 import {PrismaClient} from '@prisma/client';
 import md5 from "md5";
-import {formatNotification} from "../utils/formatter";
+import {formatNotification, newDate} from "../utils/formatter";
 
 const prisma = new PrismaClient();
 
@@ -50,7 +50,12 @@ export async function insertEntry(group, entry) {
     entry.id = generateMd5(group);
 
     try {
-        const createdNotificacao = await prisma.notificacao.create({data: entry});
+        const createdNotificacao = await prisma.notificacao.create({
+            data: {
+                ...entry,
+                criacao: newDate(),
+            },
+        });
 
         return formatNotification(createdNotificacao);
     } catch (err) {
