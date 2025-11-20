@@ -27,6 +27,10 @@ model Notificacao {
   urlDestino    String?  @map("url_destino") @db.Text
   criacao       DateTime @default(now())
   ativa         Boolean  @default(true)
+  subtitulo     String?
+  mobile        Boolean?  @default(false)
+  lidaEm        DateTime? @map("lida_em")
+  excluidaEm    DateTime? @map("excluida_em")
 
   @@map("notificacao")
 }
