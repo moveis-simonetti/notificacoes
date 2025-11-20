@@ -30,3 +30,12 @@ model Notificacao {
 
   @@map("notificacao")
 }
+
+model Parametro {
+  id       Int    @id @default(autoincrement())
+  contexto String
+  chave    String
+  valor    String @db.Text
+
+  @@map("parametro")
+}
