@@ -1,6 +1,6 @@
 import pusher from './pusher';
 
-import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry,} from './database';
+import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry} from './database';
 
 const RESOURCE = 'notifications';
 
@@ -63,4 +63,8 @@ export function getQttyPending(login, context) {
 
 export function getNotificationsQtde(login, context) {
     return getQuantity(login, context).then(pendente => pendente.qtde);
+}
+
+export function markAsReadNotification(id) {
+    return markAsReadEntry(id)
 }

@@ -108,3 +108,19 @@ export async function getQuantity(group, context) {
         throw err;
     }
 }
+
+export async function markAsReadEntry(id) {
+    try {
+        const notificacao = await prisma.notificacao.update({
+            where: { id },
+            data: {
+                ativa: false,
+                lidaEm: newDate(),
+            },
+        });
+
+        return formatNotification(notificacao);
+    } catch (err) {
+        throw err;
+    }
+}
