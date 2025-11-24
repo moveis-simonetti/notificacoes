@@ -74,14 +74,10 @@ export async function inactivateEntry(id) {
     }
 }
 
-export async function inactivateAllEntry(group) {
+export async function inactivateAllEntry(login, context) {
     try {
         await prisma.notificacao.updateMany({
-            where: {
-                login: {
-                    equals: group,
-                }
-            },
+            where: getWhereClause(login, context),
             data: {ativa: false},
         });
     } catch (err) {
