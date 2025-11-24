@@ -4,7 +4,7 @@ import {create, update, fetch, remove, removeAll, getStatus, fetchPaginated, mar
 export default Router()
     .post("/", create)
     .put("/", update)
-    .put("/:login/:id/read", markAsRead)
+    .patch("/:login/:id/read", markAsRead)
     .delete("/:login/:key", remove)
     .delete("/:login", removeAll)
     .get("/:login", fetch)
