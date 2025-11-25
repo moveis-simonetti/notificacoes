@@ -11,13 +11,13 @@ async function dispatchNotification(message) {
     return message;
 }
 
-async function dispatchNotificationMobile(context, message) {
+async function dispatchNotificationMobile(message) {
     const notificacao = message.notificacao;
 
-    if (!context) {
+    if (!notificacao.context) {
         throw new Error('Contexto não informado');
     }
-    const firestoreService = new FirestoreService(context);
+    const firestoreService = new FirestoreService(notificacao.context);
 
     await firestoreService.createNotification(notificacao);
 }
@@ -27,7 +27,11 @@ export async function addNotification(context, notification) {
     login = new String(login || '').toLowerCase();
 
     try {
-        const createdNote = await insertEntry(login, notification);
+        if (notification.mobile && !context) {
+            throw new Error('Contexto necessário para notificação mobile.');
+        }
+
+        const createdNote = await insertEntry(login, notification, context);
         const pendente = await getQttyPending(login, context);
 
         const result = {
@@ -41,7 +45,7 @@ export async function addNotification(context, notification) {
         }
 
         if (createdNote.mobile === true) {
-            await dispatchNotificationMobile(context, result);
+            await dispatchNotificationMobile(result);
         }
 
         return result;

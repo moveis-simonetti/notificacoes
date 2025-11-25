@@ -7,7 +7,7 @@ import {
     getQttyPending,
     updateNotification
 } from "../services/notification";
-import {toCamelCase} from "../utils/caseConverter";
+import { toCamelCase } from "../utils/caseConverter";
 
 const helper = (res, next, promise, then) => {
     return promise
@@ -51,7 +51,7 @@ export const fetch = (req, res, next) => {
 };
 
 export const remove = (req, res, next) => {
-    let {key} = req.params;
+    let { key } = req.params;
 
     return helper(
         res,
@@ -62,7 +62,7 @@ export const remove = (req, res, next) => {
 };
 
 export const removeAll = (req, res, next) => {
-    let {login} = req.params;
+    let { login } = req.params;
 
     return helper(
         res,

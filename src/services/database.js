@@ -46,7 +46,7 @@ export async function updateEntry(entry) {
     }
 }
 
-export async function insertEntry(group, entry) {
+export async function insertEntry(group, entry, context) {
     entry.id = generateMd5(group);
 
     try {
@@ -54,6 +54,7 @@ export async function insertEntry(group, entry) {
             data: {
                 ...entry,
                 criacao: newDate(),
+                context: context || null,
             },
         });
 
