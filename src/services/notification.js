@@ -1,4 +1,6 @@
 import pusher from './pusher';
+import FirestoreService from "./FirestoreService";
+import FirebaseClient from "../infra/FirebaseClient";
 
 import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, } from './database';
 
@@ -7,6 +9,17 @@ const RESOURCE = 'notifications';
 async function dispatchNotification(message) {
     await pusher.trigger(RESOURCE, message.login, message);
     return message;
+}
+
+async function dispatchNotificationMobile(context, message) {
+    const notificacao = message.notificacao;
+
+    if (!context) {
+        throw new Error('Contexto não informado');
+    }
+    const firestoreService = new FirestoreService(context);
+
+    await firestoreService.createNotification(notificacao);
 }
 
 export async function addNotification(context, notification) {
@@ -25,6 +38,10 @@ export async function addNotification(context, notification) {
 
         if (process.env.PUSHER_APP_ID) {
             await dispatchNotification(result);
+        }
+
+        if (createdNote.mobile === true) {
+            await dispatchNotificationMobile(context, result);
         }
 
         return result;

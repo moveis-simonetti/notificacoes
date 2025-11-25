@@ -1,15 +1,29 @@
 import { getFirestore } from "firebase-admin/firestore";
+import FirebaseClient from "../infra/FirebaseClient";
 
 class FirestoreService {
-  constructor(firebaseClient) {
-    this.firestore = getFirestore(firebaseClient);
+  firestore = null;
+  firebaseClient = null;
+
+  constructor(context) {
+    this.context = context;
   }
 
   async createNotification(notificacao) {
-    const collection = this.firestore.collection('notificacoes');
-    const id = notification.id;
+    const collection = (await this.getFirestore()).collection('notificacoes');
+    const id = notificacao.id;
 
     await collection.doc(id).set(notificacao);
+  }
+
+  async getFirestore() {
+    if (!this.firestore) {
+      this.firestore = getFirestore(
+        await new FirebaseClient(this.context).initialize()
+      );
+    }
+
+    return this.firestore;
   }
 }
 
