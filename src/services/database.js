@@ -114,7 +114,6 @@ export async function markAsReadEntry(id) {
         const notificacao = await prisma.notificacao.update({
             where: { id },
             data: {
-                ativa: false,
                 lidaEm: newDate(),
             },
         });
