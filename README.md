@@ -31,17 +31,34 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 ## Como Rodar o Projeto
 
-Para iniciar o projeto completo (instalar dependências, subir containers e rodar migrações), execute:
+### Primeira Execução (Setup)
+
+Se você acabou de clonar o repositório e nunca rodou o projeto antes, utilize o comando de setup. Ele fará toda a configuração inicial necessária:
+
+```bash
+make setup
+```
+
+Este comando executa os seguintes passos:
+
+1.  **Configura Aliases:** Adiciona o domínio `notificacoes.test` ao seu `/etc/hosts` (requer senha de sudo).
+2.  **Cria .env:** Copia o arquivo `.env.dist` para `.env` (se não existir).
+3.  **Build Images:** Constrói as imagens Docker do projeto.
+4.  **Inicia o Projeto:** Sobe os containers e roda as migrações.
+
+### Execução Diária
+
+Para iniciar o projeto no dia a dia (após já ter feito o setup inicial), utilize:
 
 ```bash
 make up
 ```
 
-Este comando irá:
+Este comando é ideal para sua rotina de desenvolvimento, pois ele:
 
-1. Subir os containers do Docker (App, MySQL, Redis) em segundo plano.
-2. Instalar as dependências do Node.js (`npm install`).
-3. Executar as migrações do banco de dados com Prisma (`prisma migrate dev`).
+1.  Sobe os containers do Docker em background.
+2.  Instala/Atualiza as dependências do Node.js (`npm install`).
+3.  Executa as migrações do banco de dados pendentes (`prisma migrate dev`).
 
 ## Serviços e Portas
 

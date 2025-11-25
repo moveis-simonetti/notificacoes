@@ -1,22 +1,16 @@
 import pusher from './pusher';
 
-import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry,} from './database';
+import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, } from './database';
 
 const RESOURCE = 'notifications';
 
-function dispatchNotification(message) {
-    return new Promise((fulfill, reject) => {
-        try {
-            pusher.trigger(RESOURCE, message.login, message);
-            fulfill(message);
-        } catch (err) {
-            reject(err);
-        }
-    });
+async function dispatchNotification(message) {
+    await pusher.trigger(RESOURCE, message.login, message);
+    return message;
 }
 
 export async function addNotification(context, notification) {
-    let {login} = notification;
+    let { login } = notification;
     login = new String(login || '').toLowerCase();
 
     try {
@@ -29,7 +23,9 @@ export async function addNotification(context, notification) {
             notificacao: createdNote,
         };
 
-        await dispatchNotification(result);
+        if (process.env.PUSHER_APP_ID) {
+            await dispatchNotification(result);
+        }
 
         return result;
     } catch (err) {

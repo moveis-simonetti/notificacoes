@@ -11,7 +11,7 @@ COPY package.json package.json
 COPY package-lock.json package-lock.json
 RUN npm install
 
-COPY cli/* /usr/local/bin/
+COPY cli/docker-npm-start-server /usr/local/bin/
 COPY .babelrc .babelrc
 COPY bin bin
 COPY prisma prisma
