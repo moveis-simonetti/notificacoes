@@ -3,7 +3,6 @@ import FirebaseClient from "../infra/FirebaseClient";
 
 class FirestoreService {
   firestore = null;
-  firebaseClient = null;
 
   constructor(context) {
     this.context = context;
@@ -18,9 +17,8 @@ class FirestoreService {
 
   async getFirestore() {
     if (!this.firestore) {
-      this.firestore = getFirestore(
-        await new FirebaseClient(this.context).initialize()
-      );
+      const firebaseClient = new FirebaseClient(this.context);
+      this.firestore = getFirestore(await firebaseClient.getApp());
     }
 
     return this.firestore;

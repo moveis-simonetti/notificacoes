@@ -1,17 +1,18 @@
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { PrismaClient } from '@prisma/client';
 import { credential } from 'firebase-admin';
+const KEY_FIREBASE = 'firebase.service_account';
 
 class FirebaseClient {
-  KEY_FIREBASE = 'firebase.service_account';
+  prisma = null;
+  app = null;
 
   constructor(contexto) {
     this.prisma = new PrismaClient();
     this.contexto = contexto;
-    this.app = null;
   }
 
-  async initialize() {
+  async getApp() {
     if (this.app) {
       return this.app;
     }
@@ -19,7 +20,7 @@ class FirebaseClient {
     const serviceAccount = await this.prisma.parametro.findFirst({
       where: {
         contexto: this.contexto,
-        chave: this.KEY_FIREBASE,
+        chave: KEY_FIREBASE,
       },
     });
 
