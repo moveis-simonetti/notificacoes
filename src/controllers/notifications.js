@@ -7,6 +7,7 @@ import {
     getQttyPending,
     updateNotification,
     markAsReadNotification,
+    markAsExcludedNotification,
 } from "../services/notification";
 import {toCamelCase} from "../utils/caseConverter";
 
@@ -127,6 +128,17 @@ export const markAsRead = (req, res, next) => {
         res,
         next,
         markAsReadNotification(id),
+        () => res.status(204).send()
+    )
+}
+
+export const markAsExcluded = (req, res, next) => {
+    const { id } = req.params;
+
+    return helper(
+        res,
+        next,
+        markAsExcludedNotification(id),
         () => res.status(204).send()
     )
 }
