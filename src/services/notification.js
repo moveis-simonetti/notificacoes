@@ -1,6 +1,6 @@
 import pusher from './pusher';
 
-import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry} from './database';
+import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry, markAsExcludedEntry} from './database';
 
 const RESOURCE = 'notifications';
 
@@ -67,4 +67,8 @@ export function getNotificationsQtde(login, context) {
 
 export function markAsReadNotification(id) {
     return markAsReadEntry(id)
+}
+
+export function markAsExcludedNotification(id) {
+    return markAsExcludedEntry(id);
 }
