@@ -29,8 +29,10 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
+      target: builder
     environment:
       - APP_ENV=${APP_ENV:-dev}
+    command: npm run start:dev
     volumes:
       - .:/app
     ports:
