@@ -1,14 +1,14 @@
 import { initializeApp, getApps } from 'firebase-admin/app';
-import { PrismaClient } from '@prisma/client';
 import { credential } from 'firebase-admin';
+import ParametroService from '../services/ParametroService.js';
+
 const KEY_FIREBASE = 'firebase.service_account';
 
 class FirebaseClient {
-  prisma = null;
   app = null;
 
   constructor(contexto) {
-    this.prisma = new PrismaClient();
+    this.parametroService = new ParametroService();
     this.contexto = contexto;
   }
 
@@ -17,15 +17,13 @@ class FirebaseClient {
       return this.app;
     }
 
-    const serviceAccount = await this.prisma.parametro.findFirst({
-      where: {
-        contexto: this.contexto,
-        chave: KEY_FIREBASE,
-      },
-    });
+    const serviceAccountParametro = await this.parametroService.buscarPorContextoEChave(
+      this.contexto,
+      KEY_FIREBASE
+    );
 
-    if (!serviceAccount) {
-      throw new Error(`Service Account não encontrado para o contexto: ${this.contexto}`);
+    if (!serviceAccountParametro) {
+      throw new Error(`Parâmetro ${KEY_FIREBASE} não encontrado para o contexto ${this.contexto}`);
     }
 
     const appName = `firebase-${this.contexto}`;
@@ -36,7 +34,7 @@ class FirebaseClient {
       this.app = existingApp;
     } else {
       this.app = initializeApp({
-        credential: credential.cert(JSON.parse(serviceAccount.valor)),
+        credential: credential.cert(JSON.parse(serviceAccountParametro.valor)),
       }, appName);
     }
 

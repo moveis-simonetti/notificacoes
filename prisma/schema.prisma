@@ -41,5 +41,6 @@ model Parametro {
   chave    String
   valor    String @db.Text
 
+  @@unique([contexto, chave])
   @@map("parametro")
 }
