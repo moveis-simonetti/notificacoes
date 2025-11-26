@@ -1,6 +1,6 @@
-import {PrismaClient} from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import md5 from "md5";
-import {formatNotification, newDate} from "../utils/formatter";
+import { formatNotification, newDate } from "../utils/formatter";
 
 const prisma = new PrismaClient();
 
@@ -10,7 +10,7 @@ function getWhereClause(group, context) {
             equals: group,
         },
         ativa: true,
-        ...(context ? { OR: [{context}, {context: null}] } : {}),
+        ...(context ? { OR: [{ context }, { context: null }] } : {}),
     };
 }
 
@@ -23,8 +23,8 @@ export async function getData(group, context, skip = 0, limit = undefined) {
         const notifications = await prisma.notificacao.findMany({
             where: getWhereClause(group, context),
             skip,
-            ...(limit !== undefined && {take: limit}),
-            orderBy: {criacao: 'asc'},
+            ...(limit !== undefined && { take: limit }),
+            orderBy: { criacao: 'asc' },
         });
 
         return notifications.map(notification => formatNotification(notification));
@@ -36,7 +36,7 @@ export async function getData(group, context, skip = 0, limit = undefined) {
 export async function updateEntry(entry) {
     try {
         const notification = await prisma.notificacao.update({
-            where: {id: entry.id},
+            where: { id: entry.id },
             data: entry,
         });
 
@@ -46,7 +46,7 @@ export async function updateEntry(entry) {
     }
 }
 
-export async function insertEntry(group, entry) {
+export async function insertEntry(group, entry, context) {
     entry.id = generateMd5(group);
 
     try {
@@ -54,6 +54,7 @@ export async function insertEntry(group, entry) {
             data: {
                 ...entry,
                 criacao: newDate(),
+                context: context || null,
             },
         });
 
@@ -66,8 +67,8 @@ export async function insertEntry(group, entry) {
 export async function inactivateEntry(id) {
     try {
         await prisma.notificacao.update({
-            where: {id: id},
-            data: {ativa: false},
+            where: { id: id },
+            data: { ativa: false },
         });
     } catch (err) {
         throw err;
@@ -82,7 +83,7 @@ export async function inactivateAllEntry(group) {
                     equals: group,
                 }
             },
-            data: {ativa: false},
+            data: { ativa: false },
         });
     } catch (err) {
         throw err;
@@ -103,7 +104,7 @@ export async function getQuantity(group, context) {
             }),
         ]);
 
-        return {qtde, registros_sonoros: sonoros};
+        return { qtde, registros_sonoros: sonoros };
     } catch (err) {
         throw err;
     }

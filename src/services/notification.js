@@ -1,26 +1,37 @@
 import pusher from './pusher';
+import FirestoreService from "./FirestoreService";
+import FirebaseClient from "../infra/FirebaseClient";
 
-import {getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry} from './database';
+import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry} from './database';
 
 const RESOURCE = 'notifications';
 
-function dispatchNotification(message) {
-    return new Promise((fulfill, reject) => {
-        try {
-            pusher.trigger(RESOURCE, message.login, message);
-            fulfill(message);
-        } catch (err) {
-            reject(err);
-        }
-    });
+async function dispatchNotification(message) {
+    await pusher.trigger(RESOURCE, message.login, message);
+    return message;
+}
+
+async function dispatchNotificationMobile(message) {
+    const notificacao = message.notificacao;
+
+    if (!notificacao.context) {
+        throw new Error('Contexto não informado');
+    }
+    const firestoreService = new FirestoreService(notificacao.context);
+
+    await firestoreService.createNotification(notificacao);
 }
 
 export async function addNotification(context, notification) {
-    let {login} = notification;
+    let { login } = notification;
     login = new String(login || '').toLowerCase();
 
     try {
-        const createdNote = await insertEntry(login, notification);
+        if (notification.mobile && !context) {
+            throw new Error('Contexto necessário para notificação mobile.');
+        }
+
+        const createdNote = await insertEntry(login, notification, context);
         const pendente = await getQttyPending(login, context);
 
         const result = {
@@ -29,7 +40,13 @@ export async function addNotification(context, notification) {
             notificacao: createdNote,
         };
 
-        await dispatchNotification(result);
+        if (process.env.PUSHER_APP_ID) {
+            await dispatchNotification(result);
+        }
+
+        if (createdNote.mobile === true) {
+            await dispatchNotificationMobile(result);
+        }
 
         return result;
     } catch (err) {
