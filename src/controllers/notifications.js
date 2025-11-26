@@ -5,7 +5,8 @@ import {
     getNotificationsByUser,
     getNotificationsQtde,
     getQttyPending,
-    updateNotification
+    updateNotification,
+    markAsReadNotification,
 } from "../services/notification";
 import { toCamelCase } from "../utils/caseConverter";
 
@@ -118,3 +119,14 @@ export const fetchPaginated = (req, res, next) => {
         next();
     });
 };
+
+export const markAsRead = (req, res, next) => {
+    const { id } = req.params
+
+    return helper(
+        res,
+        next,
+        markAsReadNotification(id),
+        () => res.status(204).send()
+    )
+}
