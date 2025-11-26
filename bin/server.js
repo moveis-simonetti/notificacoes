@@ -1,17 +1,18 @@
+require('newrelic');
 require('dotenv').config();
 
 function normalizaPort(val) {
-    const port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
-    if (isNaN(port)) {
-        return val;
-    }
+  if (isNaN(port)) {
+    return val;
+  }
 
-    if (port >= 0) {
-        return port;
-    }
+  if (port >= 0) {
+    return port;
+  }
 
-    return false;
+  return false;
 }
 
 const http = require('http');
