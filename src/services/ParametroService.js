@@ -5,8 +5,13 @@ class ParametroService {
     this.parametroRepository = parametroRepository || new ParametroRepository();
   }
 
-  async buscarPorContextoEChave(contexto, chave) {
+  async buscarPorContextoEChaveOuFalhar(contexto, chave) {
     const parametro = await this.parametroRepository.findByContextoAndChave(contexto, chave);
+
+    if (!parametro || !parametro.valor) {
+      throw new Error(`Parametro ${chave} não encontrado para o contexto ${contexto}`);
+    }
+
     return parametro;
   }
 }

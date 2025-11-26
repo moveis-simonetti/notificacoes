@@ -7,9 +7,9 @@ const KEY_FIREBASE = 'firebase.service_account';
 class FirebaseClient {
   app = null;
 
-  constructor(contexto) {
+  constructor(context) {
     this.parametroService = new ParametroService();
-    this.contexto = contexto;
+    this.context = context;
   }
 
   async getApp() {
@@ -17,16 +17,12 @@ class FirebaseClient {
       return this.app;
     }
 
-    const serviceAccountParametro = await this.parametroService.buscarPorContextoEChave(
-      this.contexto,
+    const parametro = await this.parametroService.buscarPorContextoEChaveOuFalhar(
+      this.context,
       KEY_FIREBASE
     );
 
-    if (!serviceAccountParametro) {
-      throw new Error(`Parâmetro ${KEY_FIREBASE} não encontrado para o contexto ${this.contexto}`);
-    }
-
-    const appName = `firebase-${this.contexto}`;
+    const appName = `firebase-${this.context}`;
 
     const existingApp = getApps().find(app => app.name === appName);
 
@@ -34,7 +30,7 @@ class FirebaseClient {
       this.app = existingApp;
     } else {
       this.app = initializeApp({
-        credential: credential.cert(JSON.parse(serviceAccountParametro.valor)),
+        credential: credential.cert(JSON.parse(parametro.valor)),
       }, appName);
     }
 

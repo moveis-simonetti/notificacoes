@@ -4,7 +4,7 @@ import FirebaseClient from "../infra/FirebaseClient";
 class FirestoreService {
   firestoreInstances = new Map();
 
-  async createNotification(notificacao, context) {
+  async createNotification(context, notificacao) {
     const collection = (await this.getFirestore(context)).collection('notificacoes');
     const id = notificacao.id;
 

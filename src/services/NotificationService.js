@@ -3,12 +3,14 @@ import FirestoreService from "./FirestoreService";
 
 import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry } from './database';
 import { PrismaClient } from '@prisma/client';
+import OneSignalService from './OneSignalService';
 
 class NotificationService {
     constructor() {
         this.RESOURCE = 'notifications';
-        this.firestoreService = new FirestoreService();
         this.prisma = new PrismaClient();
+        this.firestoreService = new FirestoreService();
+        this.oneSignalService = new OneSignalService();
     }
 
     async dispatchNotification(message) {
@@ -24,8 +26,13 @@ class NotificationService {
         }
 
         await this.firestoreService.createNotification(
-            notificacao,
-            notificacao.context
+            notificacao.context,
+            notificacao
+        );
+
+        await this.oneSignalService.createPushNotificationToUser(
+            notificacao.context,
+            notificacao
         );
     }
 
