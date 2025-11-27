@@ -30,7 +30,7 @@ class NotificationService {
             notificacao
         );
 
-        await this.oneSignalService.createPushNotificationToUser(
+        await this.oneSignalService.createPushNotification(
             notificacao.context,
             notificacao
         );

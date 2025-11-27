@@ -3,7 +3,7 @@ import OneSignalClient from '../infra/OneSignalClient.js';
 class OneSignalService {
   clients = new Map();
 
-  async createPushNotificationToUser(context, notificacao) {
+  async createPushNotification(context, notificacao) {
     if (!notificacao.login || !notificacao.assunto || !notificacao.conteudo) {
       throw new Error('Login, assunto e conteudo são obrigatórios');
     }
