@@ -1,8 +1,7 @@
-import pusher from './pusher';
 import FirestoreService from "./FirestoreService";
-
-import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, updateEntry, markAsReadEntry } from './database';
+import pusher from './pusher';
 import { PrismaClient } from '@prisma/client';
+import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, markAsExcludedEntry, markAsReadEntry, updateEntry } from './database';
 import OneSignalService from './OneSignalService';
 
 class NotificationService {
@@ -99,6 +98,11 @@ class NotificationService {
     markAsReadNotification(id) {
         return markAsReadEntry(id);
     }
+
+    markAsExcludedNotification(id) {
+        return markAsExcludedEntry(id);
+    }
+
 }
 
 export default NotificationService;

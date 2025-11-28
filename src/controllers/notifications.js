@@ -123,3 +123,14 @@ export const markAsRead = (req, res, next) => {
         () => res.status(204).send()
     )
 }
+
+export const markAsExcluded = (req, res, next) => {
+    const { id } = req.params;
+
+    return helper(
+        res,
+        next,
+        notificationService.markAsExcludedNotification(id),
+        () => res.status(204).send()
+    )
+}

@@ -124,3 +124,19 @@ export async function markAsReadEntry(id) {
         throw err;
     }
 }
+
+export async function markAsExcludedEntry(id) {
+    try {
+        const notificacao = await prisma.notificacao.update({
+            where: { id },
+            data: {
+                ativa: false,
+                excluidaEm: newDate(),
+            },
+        });
+
+        return formatNotification(notificacao);
+    } catch (err) {
+        throw err;
+    }
+}
