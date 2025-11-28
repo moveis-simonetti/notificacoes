@@ -1,0 +1,25 @@
+#!/bin/bash
+
+BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..
+BASE_PATH=$(realpath $BASE_PATH)
+
+PARAMS=$(echo $@)
+EXTRAS=-t
+if [[ $- == *i* || " $* " == *" --interactive "* ]]; then
+    EXTRAS=-it
+    PARAMS=${PARAMS//--interactive/}
+fi
+
+NAME="server-run-app-local-notificacoes"
+ID=$(docker inspect "$NAME" --format "{{.ID}}" 2> /dev/null)
+
+if [ -z "$ID" ] || [ "$(docker inspect $ID --format "{{ .State.Running }}")" = "false" ]; then
+    docker stop "$NAME" &> /dev/null
+    docker rm "$NAME" &> /dev/null
+
+    docker compose run -d --no-deps --name "$NAME" \
+        -e "LOCAL_GIT_ROOT=$(git rev-parse --show-toplevel)" \
+        app sh -c "while true; do echo 'beep'; sleep 5; done" >> /dev/null
+fi
+
+docker exec $EXTRAS $NAME $PARAMS

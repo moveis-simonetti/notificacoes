@@ -1,0 +1,2 @@
+#!/bin/bash
+cli/run-node-local --interactive npm "$@"
