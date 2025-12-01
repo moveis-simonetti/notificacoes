@@ -12,8 +12,6 @@ class NotificationsClient {
   private getClient(): AxiosInstance {
     if (this.axiosInstance) return this.axiosInstance
 
-    console.log(this.baseUrl)
-
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     }
@@ -63,7 +61,7 @@ class NotificationsClient {
     )}/${encodeURIComponent(id)}/excluded`
 
     try {
-      const resp = await client.patch(path)
+      const resp = await client.delete(path)
 
       if (
         resp.status !== HttpStatusCode.Ok &&
