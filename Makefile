@@ -38,3 +38,13 @@ host-aliases: ## Add host aliases to /etc/hosts
 	sudo cli/section-edit "notificacoes-aliases" /etc/hosts /dev/stdin <<< "127.0.0.1	notificacoes.test"
 
 setup: host-aliases .env docker-build-images up ## Setup project from scratch
+
+setup-functions: ## Setup Firebase Functions environment
+	bash cli/setup-functions.sh
+	cd functions && firebase login
+	cd functions && firebase use --add
+	cd functions && npm install
+	cd functions && npm run dev
+
+up-functions: ## Start Firebase Functions emulators
+	cd functions && npm run dev

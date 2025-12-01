@@ -5,4 +5,6 @@ dist/
 .env
 npm-debug.log
 /src/generated/prisma
+.firebaserc
 .vscode/
+functions/.secret.local
