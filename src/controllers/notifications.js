@@ -114,7 +114,7 @@ export const fetchPaginated = (req, res, next) => {
 };
 
 export const markAsRead = (req, res, next) => {
-    const { id } = req.params
+    const { id } = req.body
 
     return helper(
         res,
@@ -125,7 +125,7 @@ export const markAsRead = (req, res, next) => {
 }
 
 export const markAsExcluded = (req, res, next) => {
-    const { id } = req.params;
+    const { id } = req.body;
 
     return helper(
         res,
