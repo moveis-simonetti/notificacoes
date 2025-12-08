@@ -1,6 +1,9 @@
 import axios from "axios";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { webhookReadUrl, webhookExcludedUrl } from "../config/params";
+import {
+  webhookNotificationReadUrl,
+  webhookNotificationExcludedUrl,
+} from "../config/params";
 
 async function callWebhook(webhookUrl: string, id: string) {
   const response = await axios.post(
@@ -33,10 +36,10 @@ function createWebhookHandler(collectionPath: string, webhookSecret: string) {
 
 export const onNotificationRead = createWebhookHandler(
   "notificacoes_lidas/{notificationId}",
-  webhookReadUrl.value()
+  webhookNotificationReadUrl.value()
 );
 
 export const onNotificationRemoved = createWebhookHandler(
   "notificacoes_excluidas/{notificationId}",
-  webhookExcludedUrl.value()
+  webhookNotificationExcludedUrl.value()
 );

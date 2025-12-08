@@ -1,4 +1,8 @@
 import { defineSecret } from "firebase-functions/params";
 
-export const webhookReadUrl = defineSecret("WEBHOOK_READ_URL");
-export const webhookExcludedUrl = defineSecret("WEBHOOK_EXCLUDED_URL");
+export const webhookNotificationReadUrl = defineSecret(
+  "WEBHOOK_NOTIFICATION_READ_URL"
+);
+export const webhookNotificationExcludedUrl = defineSecret(
+  "WEBHOOK_NOTIFICATION_EXCLUDED_URL"
+);
