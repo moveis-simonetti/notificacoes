@@ -1,3 +1,4 @@
-import { defineSecret } from "firebase-functions/params"
+import { defineSecret } from "firebase-functions/params";
 
-export const notificacoesApiUrl = defineSecret("NOTIFICACOES_API_URL")
+export const webhookReadUrl = defineSecret("WEBHOOK_READ_URL");
+export const webhookExcludedUrl = defineSecret("WEBHOOK_EXCLUDED_URL");

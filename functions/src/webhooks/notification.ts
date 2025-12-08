@@ -1,48 +1,42 @@
-import { onDocumentCreated } from "firebase-functions/v2/firestore"
-import NotificationsClient from "../clients/NotificationsClient"
-import { notificacoesApiUrl } from "../config/params"
-import { Notification } from "../types/Notification"
+import axios from "axios";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { webhookReadUrl, webhookExcludedUrl } from "../config/params";
 
-function createNotificationHandler(
-  collectionPath: string,
-  clientMethod: (
-    client: NotificationsClient,
-    login: string,
-    id: string
-  ) => Promise<any>
-) {
+async function callWebhook(webhookUrl: string, id: string) {
+  const response = await axios.post(
+    webhookUrl,
+    { id },
+    {
+      headers: { "Content-Type": "application/json" },
+      timeout: 8000,
+    }
+  );
+
+  return response.data;
+}
+
+function createWebhookHandler(collectionPath: string, webhookSecret: string) {
   return onDocumentCreated(
     {
       document: collectionPath,
-      secrets: [notificacoesApiUrl],
+      secrets: [webhookSecret],
     },
     async (event) => {
-      const notificationsClient = new NotificationsClient()
+      const notificationId = event.params.notificationId;
 
-      const documento = event.data?.data() as Notification | undefined
+      if (!notificationId) return;
 
-      if (!documento) return
-
-      const notificationId = event.params.notificationId
-      const login = documento.login
-
-      if (!notificationId || !login) return
-
-      try {
-        return await clientMethod(notificationsClient, login, notificationId)
-      } catch (error) {
-        throw error
-      }
+      return await callWebhook(webhookSecret, notificationId);
     }
-  )
+  );
 }
 
-export const onNotificationRead = createNotificationHandler(
+export const onNotificationRead = createWebhookHandler(
   "notificacoes_lidas/{notificationId}",
-  (client, login, id) => client.markAsRead(login, id)
-)
+  webhookReadUrl.value()
+);
 
-export const onNotificationRemoved = createNotificationHandler(
+export const onNotificationRemoved = createWebhookHandler(
   "notificacoes_excluidas/{notificationId}",
-  (client, login, id) => client.markDelete(login, id)
-)
+  webhookExcludedUrl.value()
+);
