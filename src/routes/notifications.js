@@ -1,5 +1,5 @@
-import {Router} from 'express';
-import {create, update, fetch, remove, removeAll, getStatus, fetchPaginated, markAsRead, markAsExcluded} from "../controllers/notifications";
+import { Router } from 'express';
+import { create, update, fetch, remove, removeAll, getStatus, fetchPaginated, markAsRead, markAsExcluded } from "../controllers/notifications";
 
 export default Router()
     .post("/", create)
