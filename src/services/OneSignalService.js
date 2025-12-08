@@ -32,7 +32,7 @@ class OneSignalService {
       }
     }
 
-    if(notificacao.url_destino) {
+    if (notificacao.url_destino) {
       notificationData.url = notificacao.url_destino
     }
 
