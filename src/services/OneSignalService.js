@@ -32,6 +32,10 @@ class OneSignalService {
       }
     }
 
+    if (notificacao.url_destino) {
+      notificationData.url = notificacao.url_destino
+    }
+
     const response = (await this.getClient(context)).post(
       '/notifications',
       notificationData
