@@ -61,7 +61,7 @@ export const removeAll = (req, res, next) => {
     return helper(
         res,
         next,
-        notificationService.deleteAllNotifications(login),
+        notificationService.deleteAllNotifications(login, req.headers.context),
         () => res.status(204).send()
     )
 };

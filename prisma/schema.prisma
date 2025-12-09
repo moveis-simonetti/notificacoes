@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["strictUndefinedChecks"]
+  previewFeatures = []
 }
 
 datasource db {
@@ -23,7 +23,7 @@ model Notificacao {
   login         String
   pendente      Boolean
   sonoro        Boolean
-  identificacao String
+  identificacao String?
   urlDestino    String?  @map("url_destino") @db.Text
   criacao       DateTime @default(now())
   ativa         Boolean  @default(true)
