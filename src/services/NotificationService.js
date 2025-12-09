@@ -62,7 +62,7 @@ class NotificationService {
             })
         } catch (err) {
             console.error('[NotificationService] Erro ao processar notificação:', err.message);
-            return { error: err.message };
+            throw err;
         }
     }
 
