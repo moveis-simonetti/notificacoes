@@ -10,3 +10,6 @@ node_modules/
 *.local
 lib
 .secret.local
+
+# Logs
+*.log
