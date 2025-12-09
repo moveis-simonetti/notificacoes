@@ -9,6 +9,8 @@ import type { defineSecret } from "firebase-functions/params";
 const region = "southamerica-east1";
 
 async function callWebhook(webhookUrl: string, id: string) {
+  console.log("[callWebhook] Chamando webhook...", webhookUrl);
+
   const response = await axios.post(
     webhookUrl,
     { id },
@@ -17,6 +19,8 @@ async function callWebhook(webhookUrl: string, id: string) {
       timeout: 8000,
     }
   );
+
+  console.log("[callWebhook] Resposta do webhook...", response.data);
 
   return response.data;
 }
@@ -33,10 +37,20 @@ function createWebhookHandler(
     },
     async (event) => {
       const notificationId = event.params.notificationId;
+      console.log("[createWebhookHandler] notificationId...", notificationId);
 
       if (!notificationId) return;
 
-      return await callWebhook(webhookSecret.value(), notificationId);
+      console.log(
+        "[createWebhookHandler] Chamando webhook...",
+        webhookSecret.value()
+      );
+
+      const response = await callWebhook(webhookSecret.value(), notificationId);
+
+      console.log("[createWebhookHandler] Resposta do webhook...", response);
+
+      return response;
     }
   );
 }
