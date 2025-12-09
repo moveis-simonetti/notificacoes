@@ -4,6 +4,9 @@ import {
   webhookNotificationReadUrl,
   webhookNotificationExcludedUrl,
 } from "../config/params";
+import type { defineSecret } from "firebase-functions/params";
+
+const region = "southamerica-east1";
 
 async function callWebhook(webhookUrl: string, id: string) {
   const response = await axios.post(
@@ -18,28 +21,32 @@ async function callWebhook(webhookUrl: string, id: string) {
   return response.data;
 }
 
-function createWebhookHandler(collectionPath: string, webhookSecret: string) {
+function createWebhookHandler(
+  collectionPath: string,
+  webhookSecret: ReturnType<typeof defineSecret>
+) {
   return onDocumentCreated(
     {
       document: collectionPath,
       secrets: [webhookSecret],
+      region,
     },
     async (event) => {
       const notificationId = event.params.notificationId;
 
       if (!notificationId) return;
 
-      return await callWebhook(webhookSecret, notificationId);
+      return await callWebhook(webhookSecret.value(), notificationId);
     }
   );
 }
 
 export const onNotificationRead = createWebhookHandler(
   "notificacoes_lidas/{notificationId}",
-  webhookNotificationReadUrl.value()
+  webhookNotificationReadUrl
 );
 
 export const onNotificationRemoved = createWebhookHandler(
   "notificacoes_excluidas/{notificationId}",
-  webhookNotificationExcludedUrl.value()
+  webhookNotificationExcludedUrl
 );
