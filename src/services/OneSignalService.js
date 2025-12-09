@@ -36,10 +36,8 @@ class OneSignalService {
       notificationData.url = notificacao.url_destino
     }
 
-    const response = (await this.getClient(context)).post(
-      '/notifications',
-      notificationData
-    );
+    const client = await this.getClient(context);
+    const response = await client.post('/notifications', notificationData);
 
     return response.data;
   }
