@@ -7,3 +7,4 @@ npm-debug.log
 /src/generated/prisma
 .firebaserc
 .vscode/
+*.log
