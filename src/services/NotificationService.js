@@ -40,7 +40,7 @@ class NotificationService {
         login = new String(login || '').toLowerCase();
 
         try {
-            const result = await this.prisma.$transaction(async (tx) => {
+            return await this.prisma.$transaction(async (tx) => {
                 const createdNote = await insertEntry(login, notification, context, tx);
                 const pendente = await this.getQttyPending(login, context, tx);
 
@@ -60,10 +60,9 @@ class NotificationService {
 
                 return txResult;
             })
-
-            return result;
         } catch (err) {
-            throw err;
+            console.error('[NotificationService] Erro na transação de notificação:', err.message);
+            return { error: err.message };
         }
     }
 

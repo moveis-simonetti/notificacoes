@@ -5,7 +5,8 @@ class FirestoreService {
   firestoreInstances = new Map();
 
   async createNotification(context, notificacao) {
-    const collection = (await this.getFirestore(context)).collection('notificacoes');
+    const firestore = await this.getFirestore(context)
+    const collection = firestore.collection('notificacoes');
     const id = notificacao.id;
 
     await collection.doc(id).set(notificacao);
