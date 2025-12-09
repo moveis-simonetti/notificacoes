@@ -61,7 +61,7 @@ class NotificationService {
                 return txResult;
             })
         } catch (err) {
-            console.error('[NotificationService] Erro na transação de notificação:', err.message);
+            console.error('[NotificationService] Erro ao processar notificação:', err.message);
             return { error: err.message };
         }
     }
