@@ -33,6 +33,7 @@ model Notificacao {
   excluidaEm    DateTime? @map("excluida_em")
 
   @@map("notificacao")
+  @@index([login, ativa])
 }
 
 model Parametro {
