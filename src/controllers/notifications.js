@@ -1,13 +1,7 @@
-import {
-    addNotification,
-    deleteAllNotifications,
-    deleteNotification,
-    getNotificationsByUser,
-    getNotificationsQtde,
-    getQttyPending,
-    updateNotification
-} from "../services/notification";
-import {toCamelCase} from "../utils/caseConverter";
+import NotificationService from "../services/NotificationService";
+import { toCamelCase } from "../utils/caseConverter";
+
+const notificationService = new NotificationService();
 
 const helper = (res, next, promise, then) => {
     return promise
@@ -25,7 +19,7 @@ export const create = (req, res, next) => (
     helper(
         res,
         next,
-        addNotification(req.headers.context, toCamelCase(req.body)),
+        notificationService.addNotification(req.headers.context, toCamelCase(req.body)),
         notification => res.status(201).send(notification)
     )
 );
@@ -34,7 +28,7 @@ export const update = (req, res, next) => (
     helper(
         res,
         next,
-        updateNotification(toCamelCase(req.body)),
+        notificationService.updateNotification(toCamelCase(req.body)),
         notification => res.status(200).send(notification)
     )
 );
@@ -45,29 +39,29 @@ export const fetch = (req, res, next) => {
     helper(
         res,
         next,
-        getNotificationsByUser(login, req.headers.context),
+        notificationService.getNotificationsByUser(login, req.headers.context),
         notifications => res.status(200).send(notifications)
     )
 };
 
 export const remove = (req, res, next) => {
-    let {key} = req.params;
+    let { key } = req.params;
 
     return helper(
         res,
         next,
-        deleteNotification(key),
+        notificationService.deleteNotification(key),
         () => res.status(204).send()
     )
 };
 
 export const removeAll = (req, res, next) => {
-    let {login} = req.params;
+    let { login } = req.params;
 
     return helper(
         res,
         next,
-        deleteAllNotifications(login, req.headers.context),
+        notificationService.deleteAllNotifications(login, req.headers.context),
         () => res.status(204).send()
     )
 };
@@ -76,7 +70,7 @@ export const getStatus = (req, res, next) => (
     helper(
         res,
         next,
-        getQttyPending(req.params.login, req.headers.context),
+        notificationService.getQttyPending(req.params.login, req.headers.context),
         qtty => res.status(200).send(qtty)
     )
 );
@@ -97,8 +91,8 @@ export const fetchPaginated = (req, res, next) => {
     const skip = (page - 1) * limit;
 
     return Promise.all([
-        getNotificationsByUser(login, context, skip, limit),
-        getNotificationsQtde(login, context),
+        notificationService.getNotificationsByUser(login, context, skip, limit),
+        notificationService.getNotificationsQtde(login, context),
     ]).then(([notifications, totalItems]) => {
         const totalPages = Math.ceil(totalItems / limit);
 
@@ -118,3 +112,25 @@ export const fetchPaginated = (req, res, next) => {
         next();
     });
 };
+
+export const markAsRead = (req, res, next) => {
+    const { id } = req.body
+
+    return helper(
+        res,
+        next,
+        notificationService.markAsReadNotification(id),
+        () => res.status(204).send()
+    )
+}
+
+export const markAsExcluded = (req, res, next) => {
+    const { id } = req.body;
+
+    return helper(
+        res,
+        next,
+        notificationService.markAsExcludedNotification(id),
+        () => res.status(204).send()
+    )
+}

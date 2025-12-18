@@ -1,5 +1,8 @@
 export function toCamelCase(notification) {
-    const {url_destino, ...rest} = notification;
+    const {
+      url_destino = null,
+      ...rest
+    } = notification;
 
     return {
         ...rest,

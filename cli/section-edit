@@ -1,0 +1,45 @@
+#!/bin/bash
+
+function help-dump {
+    echo "This command adds/edits a 'block' to a file from another"
+    echo
+    echo "Usage"
+    echo "  $0 <block-name> <dest-file> <block-value>"
+}
+
+if grep -Eq '(-h|--help)' <<< $@; then
+    help-dump
+    exit
+fi
+
+if [ ${#@} -lt 3 ]; then
+    help-dump
+    exit 1
+fi
+
+export BLK_NAME=$1
+export DES_FILE=$2
+export BLK_FILE=$3
+
+mkdir -p var
+export WRK_FILE=$(mktemp var/wf-XXXX)
+export BKP_FILE=$(mktemp var/bkp-XXXX)
+
+cat $DES_FILE > $BKP_FILE
+
+function revert {
+    exist_status=$?
+    printf "\033[0;31mAborting...\033[m\n"
+    cat $BKP_FILE > $DES_FILE
+    exit $exist_status
+}
+trap revert SIGINT SIGTERM
+
+cat $DES_FILE | sed -e "/# BEGIN $BLK_NAME/,/# END $BLK_NAME/c\\" | tr -d '\r' | sed '/^$/d' > $WRK_FILE
+
+echo "# BEGIN $BLK_NAME" >> $WRK_FILE
+cat $BLK_FILE >> $WRK_FILE
+echo "# END $BLK_NAME" >> $WRK_FILE
+
+cat $WRK_FILE > $DES_FILE
+rm $WRK_FILE $BKP_FILE

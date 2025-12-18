@@ -1,5 +1,5 @@
 export function formatNotification(notification) {
-    const {urlDestino, criacao, ...rest} = notification;
+    const {lidaEm, excluidaEm, urlDestino, criacao, ...rest} = notification;
 
     let criacaoObj = !(criacao instanceof Date)
         ? new Date(criacao)
@@ -7,6 +7,8 @@ export function formatNotification(notification) {
 
     return {
         ...rest,
+        lida_em: lidaEm,
+        excluida_em: excluidaEm,
         url_destino: urlDestino,
         criacao: criacaoObj
             .toISOString()
