@@ -2,14 +2,16 @@ import FirestoreService from "./FirestoreService";
 import pusher from './pusher';
 import { PrismaClient } from '@prisma/client';
 import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, markAsExcludedEntry, markAsReadEntry, updateEntry } from './database';
-import OneSignalService from './OneSignalService';
-
+import OneSignalService, { NOTIFICATION_PRIORITY } from './OneSignalService';
+import ParametroService from "./ParametroService";
 class NotificationService {
     constructor() {
         this.RESOURCE = 'notifications';
+        
         this.prisma = new PrismaClient();
         this.firestoreService = new FirestoreService();
         this.oneSignalService = new OneSignalService();
+        this.parametroService = new ParametroService();
     }
 
     async dispatchNotification(message) {
@@ -17,7 +19,7 @@ class NotificationService {
         return message;
     }
 
-    async dispatchNotificationMobile(message) {
+    async dispatchNotificationMobile(message, priority = null) {
         const notificacao = message.notificacao;
 
         if (!notificacao.context) {
@@ -31,7 +33,8 @@ class NotificationService {
 
         await this.oneSignalService.createPushNotification(
             notificacao.context,
-            notificacao
+            notificacao,
+            priority
         );
     }
 
@@ -55,7 +58,7 @@ class NotificationService {
                 }
 
                 if (createdNote.mobile === true) {
-                    await this.dispatchNotificationMobile(txResult);
+                    await this.dispatchNotificationMobile(txResult, NOTIFICATION_PRIORITY.URGENT);
                 }
 
                 return txResult;
@@ -101,7 +104,6 @@ class NotificationService {
     markAsExcludedNotification(id) {
         return markAsExcludedEntry(id);
     }
-
 }
 
 export default NotificationService;
