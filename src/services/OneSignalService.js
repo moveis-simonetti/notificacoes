@@ -1,9 +1,22 @@
 import OneSignalClient from '../infra/OneSignalClient.js';
+import ParametroService from './ParametroService.js';
+
+export const NOTIFICATION_PRIORITY = {
+    LOW: 'low',
+    MEDIUM: 'medium',
+    HIGH: 'high',
+    URGENT: 'urgent'
+}
 
 class OneSignalService {
+  BASE_ANDROID_CHANNEL_ID = 'onesignal.android_channel_id';
   clients = new Map();
 
-  async createPushNotification(context, notificacao) {
+  constructor() {
+    this.parametroService = new ParametroService();
+  }
+
+  async createPushNotification(context, notificacao, priority = null) {
     if (!notificacao.login || !notificacao.assunto || !notificacao.conteudo) {
       throw new Error('Login, assunto e conteudo são obrigatórios');
     }
@@ -25,6 +38,14 @@ class OneSignalService {
         en: notificacao.conteudo
       }
     };
+
+    const androidChannelId = priority 
+      ? await this.getAndroidChannelIdByContextAndPriority(context, priority)
+      : null;
+      
+    if (androidChannelId) {
+      notificationData.android_channel_id = androidChannelId;
+    }
 
     if (notificacao.subtitulo) {
       notificationData.subtitle = {
@@ -49,6 +70,18 @@ class OneSignalService {
     }
 
     return this.clients.get(context);
+  }
+
+  async getAndroidChannelIdByContextAndPriority(context, priority) {
+      const key = `${this.BASE_ANDROID_CHANNEL_ID}.${priority}`;
+      
+      const parametro = await this.parametroService.buscarPorContextoEChave(context, key);
+
+      if (!parametro || !parametro.valor) {
+          return null;
+      }
+
+      return parametro.valor;
   }
 }
 
