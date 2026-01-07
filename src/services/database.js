@@ -15,7 +15,7 @@ function getWhereClause(group, context) {
 }
 
 function generateMd5(group) {
-    return md5(`${group}${(new Date()).getMilliseconds()}`);
+    return md5(`${group}${Date.now()}`);
 }
 
 export async function getData(group, context, skip = 0, limit = undefined) {
