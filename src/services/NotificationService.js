@@ -26,6 +26,10 @@ class NotificationService {
             throw new Error('Contexto necessário para notificação mobile.');
         }
 
+        if (!notificacao.login || !notificacao.assunto || !notificacao.conteudo) {
+            throw new Error('Login, assunto e conteudo são obrigatórios');
+        }
+
         await this.firestoreService.createNotification(
             notificacao.context,
             notificacao
