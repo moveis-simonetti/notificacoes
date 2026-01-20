@@ -17,10 +17,6 @@ class OneSignalService {
   }
 
   async createPushNotification(context, notificacao, priority = null) {
-    if (!notificacao.login || !notificacao.assunto || !notificacao.conteudo) {
-      throw new Error('Login, assunto e conteudo são obrigatórios');
-    }
-
     const notificationData = {
       filters: [
         {
