@@ -1,5 +1,5 @@
 import {PrismaClient} from '@prisma/client';
-import md5 from "md5";
+import {v4 as uuidv4} from 'uuid';
 import {formatNotification, newDate} from "../utils/formatter";
 
 const prisma = new PrismaClient();
@@ -14,8 +14,8 @@ function getWhereClause(group, context) {
     };
 }
 
-function generateMd5(group) {
-    return md5(`${group}${(new Date()).getMilliseconds()}`);
+function generateUUID() {
+    return uuidv4();
 }
 
 export async function getData(group, context, skip = 0, limit = undefined) {
@@ -47,7 +47,7 @@ export async function updateEntry(entry) {
 }
 
 export async function insertEntry(group, entry) {
-    entry.id = generateMd5(group);
+    entry.id = generateUUID();
 
     try {
         const createdNotificacao = await prisma.notificacao.create({
