@@ -2,7 +2,7 @@
   "functions": [
     {
       "source": "functions",
-      "codebase": "default",
+      "codebase": "notificacoes",
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
         "node_modules",
