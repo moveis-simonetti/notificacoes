@@ -1,5 +1,5 @@
 import {Redis} from 'ioredis';
-import md5 from 'md5';
+import {v4 as uuidv4} from 'uuid';
 
 const redis = new Redis(process.env.REDIS_URL);
 
@@ -15,8 +15,8 @@ function getRedisKey(resource, group) {
     return `${resource}:${group}`;
 }
 
-function generateMd5(group) {
-    return md5(`${group}${(new Date()).getMilliseconds()}`);
+function generateUUID() {
+    return uuidv4();
 }
 
 export function setData(resource, group, data) {
@@ -46,7 +46,7 @@ export function updateEntry(resource, group, entry) {
 }
 
 export function insertEntry(resource, group, entry) {
-    entry._$key = generateMd5(group);
+    entry._$key = generateUUID();
 
     return getData(resource, group)
         .then(data => setData(resource, group, data.concat(entry)))
