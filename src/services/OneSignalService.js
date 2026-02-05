@@ -32,6 +32,9 @@ class OneSignalService {
       },
       contents: {
         en: notificacao.conteudo
+      },
+      data: {
+        id: notificacao.id
       }
     };
 
