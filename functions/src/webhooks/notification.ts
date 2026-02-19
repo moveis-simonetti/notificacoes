@@ -6,8 +6,6 @@ import {
 } from "../config/params";
 import type { defineSecret } from "firebase-functions/params";
 
-const region = "southamerica-east1";
-
 async function callWebhook(webhookUrl: string, id: string) {
   console.log("[callWebhook] Chamando webhook...", webhookUrl);
 
@@ -33,7 +31,6 @@ function createWebhookHandler(
     {
       document: collectionPath,
       secrets: [webhookSecret],
-      region,
     },
     async (event) => {
       const notificationId = event.params.notificationId;
