@@ -27,7 +27,7 @@
     "printf": "^0.6.1",
     "prisma": "^6.17.1",
     "pusher": "^5.2",
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7",
