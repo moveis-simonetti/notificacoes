@@ -1,6 +1,6 @@
 import {PrismaClient} from '@prisma/client';
 import {v4 as uuidv4} from 'uuid';
-import {formatNotification, newDate} from "../utils/formatter";
+import {criacaoRecebidaOuAgora, formatNotification, newDate} from "../utils/formatter";
 
 const prisma = new PrismaClient();
 
@@ -46,22 +46,60 @@ export async function updateEntry(entry) {
     }
 }
 
-export async function insertEntry(group, entry, context, client = prisma) {
-    entry.id = generateUUID();
+function montarDados(entry, context) {
+    const mobile = entry.mobile === true;
 
+    return {
+        id: generateUUID(),
+        assunto: entry.assunto,
+        conteudo: entry.conteudo,
+        icone: entry.icone ?? null,
+        context: context || null,
+        login: entry.login,
+        pendente: entry.pendente ?? true,
+        sonoro: entry.sonoro ?? false,
+        identificacao: entry.identificacao ?? null,
+        urlDestino: entry.urlDestino ?? null,
+        criacao: criacaoRecebidaOuAgora(entry.criacao),
+        ativa: entry.ativa ?? true,
+        subtitulo: entry.subtitulo ?? null,
+        mobile,
+        lidaEm: entry.lidaEm ?? null,
+        excluidaEm: entry.excluidaEm ?? null,
+        agrupamento: mobile ? (entry.agrupamento || null) : null,
+        idempotencia: entry.idempotencia || null,
+    };
+}
+
+export async function insertEntry(group, entry, context, client = prisma) {
     try {
         const createdNotificacao = await client.notificacao.create({
-            data: {
-                ...entry,
-                criacao: newDate(),
-                context: context || null,
-            },
+            data: montarDados(entry, context),
         });
 
         return formatNotification(createdNotificacao);
     } catch (err) {
         throw err;
     }
+}
+
+export async function findByIdempotencia(login, idempotencia) {
+    const notificacao = await prisma.notificacao.findFirst({
+        where: { login, idempotencia },
+    });
+
+    return notificacao ? formatNotification(notificacao) : null;
+}
+
+export async function markAsDispatchedEntry(id) {
+    await prisma.notificacao.update({
+        where: { id },
+        data: { disparadaEm: newDate() },
+    });
+}
+
+export function isIdempotenciaDuplicada(err) {
+    return err?.code === 'P2002';
 }
 
 export async function inactivateEntry(id) {
