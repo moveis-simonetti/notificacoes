@@ -15,10 +15,11 @@ export function formatNotification(notification) {
             .replace('T', ' ')
             .replace('Z', '')
             .split('.')[0],
+        ordem: criacaoObj.getTime(),
     };
 }
 
-export function newDate() {
+export function newDate(instante = new Date()) {
     const preDate = new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/Sao_Paulo',
         year: 'numeric',
@@ -28,9 +29,16 @@ export function newDate() {
         minute: '2-digit',
         second: '2-digit',
         hour12: false,
-    }).format(new Date());
+    }).format(instante);
 
     const [mes, dia, ano, hora, minuto, segundo] = preDate.match(/\d+/g);
+    const milissegundos = String(instante.getMilliseconds()).padStart(3, '0');
 
-    return new Date(`${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`);
+    return new Date(`${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}.${milissegundos}`);
+}
+
+export function criacaoRecebidaOuAgora(criacao) {
+    const instante = typeof criacao === 'string' ? new Date(criacao) : null;
+
+    return instante && !Number.isNaN(instante.getTime()) ? newDate(instante) : newDate();
 }
