@@ -56,6 +56,11 @@ class OneSignalService {
       notificationData.url = notificacao.url_destino
     }
 
+    if (notificacao.agrupamento) {
+      notificationData.android_group = notificacao.agrupamento;
+      notificationData.thread_id = notificacao.agrupamento;
+    }
+
     const client = await this.getClient(context);
     const response = await client.post('/notifications', notificationData);
 
