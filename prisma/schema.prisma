@@ -31,9 +31,13 @@ model Notificacao {
   mobile        Boolean?  @default(false)
   lidaEm        DateTime? @map("lida_em")
   excluidaEm    DateTime? @map("excluida_em")
+  agrupamento   String?
+  idempotencia  String?
+  disparadaEm   DateTime? @map("disparada_em")
 
   @@map("notificacao")
   @@index([login, ativa])
+  @@unique([login, idempotencia])
 }
 
 model Parametro {
