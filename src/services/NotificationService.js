@@ -1,7 +1,7 @@
 import FirestoreService from "./FirestoreService";
 import pusher from './pusher';
 import { PrismaClient } from '@prisma/client';
-import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, markAsExcludedEntry, markAsReadEntry, updateEntry } from './database';
+import { findByIdempotencia, getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, isIdempotenciaDuplicada, markAsDispatchedEntry, markAsExcludedEntry, markAsReadEntry, updateEntry } from './database';
 import OneSignalService, { NOTIFICATION_PRIORITY } from './OneSignalService';
 import ParametroService from "./ParametroService";
 class NotificationService {
@@ -30,46 +30,68 @@ class NotificationService {
             throw new Error('Login, assunto e conteudo são obrigatórios');
         }
 
-        await this.firestoreService.createNotification(
-            notificacao.context,
-            notificacao
-        );
-
-        await this.oneSignalService.createPushNotification(
-            notificacao.context,
-            notificacao,
-            priority
-        );
+        await Promise.all([
+            this.firestoreService.createNotification(notificacao.context, notificacao),
+            this.oneSignalService.createPushNotification(notificacao.context, notificacao, priority),
+        ]);
     }
 
     async addNotification(context, notification) {
-        let { login } = notification;
-        login = new String(login || '').toLowerCase();
+        const login = String(notification.login || '').toLowerCase();
 
         try {
-            return await this.prisma.$transaction(async (tx) => {
-                const createdNote = await insertEntry(login, notification, context, tx);
-                const pendente = await this.getQttyPending(login, context, tx);
+            const existente = await this.buscarPorIdempotencia(notification);
 
-                const txResult = {
-                    login,
-                    pendente,
-                    notificacao: createdNote,
-                }
+            if (existente?.disparadaEm) {
+                return this.montarResultado(login, context, existente);
+            }
 
-                if (process.env.PUSHER_APP_ID) {
-                    await this.dispatchNotification(txResult);
-                }
+            const notificacao = existente ?? await this.inserir(context, notification);
+            const resultado = await this.montarResultado(login, context, notificacao);
 
-                if (createdNote.mobile === true) {
-                    await this.dispatchNotificationMobile(txResult, NOTIFICATION_PRIORITY.URGENT);
-                }
+            await this.disparar(resultado);
+            await markAsDispatchedEntry(notificacao.id);
 
-                return txResult;
-            })
+            return resultado;
         } catch (err) {
             console.error('[NotificationService] Erro ao processar notificação:', err.message);
             throw err;
+        }
+    }
+
+    async buscarPorIdempotencia(notification) {
+        return notification.idempotencia
+            ? findByIdempotencia(notification.login, notification.idempotencia)
+            : null;
+    }
+
+    async inserir(context, notification) {
+        try {
+            return await insertEntry(notification.login, notification, context);
+        } catch (err) {
+            if (notification.idempotencia && isIdempotenciaDuplicada(err)) {
+                return this.buscarPorIdempotencia(notification);
+            }
+
+            throw err;
+        }
+    }
+
+    async montarResultado(login, context, notificacao) {
+        return {
+            login,
+            pendente: await this.getQttyPending(login, context),
+            notificacao,
+        };
+    }
+
+    async disparar(resultado) {
+        if (process.env.PUSHER_APP_ID) {
+            await this.dispatchNotification(resultado);
+        }
+
+        if (resultado.notificacao.mobile === true) {
+            await this.dispatchNotificationMobile(resultado, NOTIFICATION_PRIORITY.URGENT);
         }
     }
 
