@@ -46,11 +46,11 @@ export async function updateEntry(entry) {
     }
 }
 
-export async function insertEntry(group, entry, context, client = prisma) {
+export async function insertEntry(group, entry, context) {
     entry.id = generateUUID();
 
     try {
-        const createdNotificacao = await client.notificacao.create({
+        const createdNotificacao = await prisma.notificacao.create({
             data: {
                 ...entry,
                 criacao: newDate(),
@@ -86,13 +86,13 @@ export async function inactivateAllEntry(login, context) {
     }
 }
 
-export async function getQuantity(group, context, client = prisma) {
+export async function getQuantity(group, context) {
     try {
         const [qtde, sonoros] = await Promise.all([
-            client.notificacao.count({
+            prisma.notificacao.count({
                 where: getWhereClause(group, context),
             }),
-            client.notificacao.count({
+            prisma.notificacao.count({
                 where: {
                     ...getWhereClause(group, context),
                     sonoro: true,

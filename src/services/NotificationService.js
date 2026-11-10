@@ -1,16 +1,12 @@
 import FirestoreService from "./FirestoreService";
 import pusher from './pusher';
-import { PrismaClient } from '@prisma/client';
 import { getData, getQuantity, inactivateAllEntry, inactivateEntry, insertEntry, markAsExcludedEntry, markAsReadEntry, updateEntry } from './database';
-import OneSignalService, { NOTIFICATION_PRIORITY } from './OneSignalService';
 import ParametroService from "./ParametroService";
 class NotificationService {
     constructor() {
         this.RESOURCE = 'notifications';
         
-        this.prisma = new PrismaClient();
         this.firestoreService = new FirestoreService();
-        this.oneSignalService = new OneSignalService();
         this.parametroService = new ParametroService();
     }
 
@@ -19,7 +15,7 @@ class NotificationService {
         return message;
     }
 
-    async dispatchNotificationMobile(message, priority = null) {
+    async dispatchNotificationMobile(message) {
         const notificacao = message.notificacao;
 
         if (!notificacao.context) {
@@ -34,12 +30,6 @@ class NotificationService {
             notificacao.context,
             notificacao
         );
-
-        await this.oneSignalService.createPushNotification(
-            notificacao.context,
-            notificacao,
-            priority
-        );
     }
 
     async addNotification(context, notification) {
@@ -47,26 +37,24 @@ class NotificationService {
         login = new String(login || '').toLowerCase();
 
         try {
-            return await this.prisma.$transaction(async (tx) => {
-                const createdNote = await insertEntry(login, notification, context, tx);
-                const pendente = await this.getQttyPending(login, context, tx);
+            const createdNote = await insertEntry(login, notification, context);
+            const pendente = await this.getQttyPending(login, context);
 
-                const txResult = {
-                    login,
-                    pendente,
-                    notificacao: createdNote,
-                }
+            const result = {
+                login,
+                pendente,
+                notificacao: createdNote,
+            }
 
-                if (process.env.PUSHER_APP_ID) {
-                    await this.dispatchNotification(txResult);
-                }
+            if (process.env.PUSHER_APP_ID) {
+                await this.dispatchNotification(result);
+            }
 
-                if (createdNote.mobile === true) {
-                    await this.dispatchNotificationMobile(txResult, NOTIFICATION_PRIORITY.URGENT);
-                }
+            if (createdNote.mobile === true) {
+                await this.dispatchNotificationMobile(result);
+            }
 
-                return txResult;
-            })
+            return result;
         } catch (err) {
             console.error('[NotificationService] Erro ao processar notificação:', err.message);
             throw err;
@@ -93,8 +81,8 @@ class NotificationService {
         return inactivateAllEntry(login);
     }
 
-    getQttyPending(login, context, client = undefined) {
-        return getQuantity(login, context, client);
+    getQttyPending(login, context) {
+        return getQuantity(login, context);
     }
 
     async getNotificationsQtde(login, context) {
